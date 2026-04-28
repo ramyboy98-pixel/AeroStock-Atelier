@@ -3,10 +3,10 @@
 
     <application
         android:label="AeroStock Atelier"
-        android:theme="@android:style/Theme.DeviceDefault.Light">
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.aerostock.atelier.MainActivity"
             android:exported="true">
 
             <intent-filter>
