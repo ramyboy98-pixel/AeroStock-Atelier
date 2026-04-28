@@ -1,9 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="com.aerostock.atelier">
 
 <application
-android:allowBackup="true"
 android:label="AeroStock Atelier"
-android:theme="@android:style/Theme.Light">
+android:theme="@android:style/Theme.DeviceDefault.Light">
 
 <activity
 android:name=".MainActivity"
