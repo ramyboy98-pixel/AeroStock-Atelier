@@ -1,24 +1,23 @@
 plugins {
-    id 'com.android.application'
+id 'com.android.application'
 }
 
 android {
-    namespace 'com.aerostock.atelier'
-    compileSdk 34
+namespace 'com.aerostock.atelier'
+compileSdk 34
 
-    defaultConfig {
-        applicationId "com.aerostock.atelier"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
+defaultConfig {
+applicationId "com.aerostock.atelier"
+minSdk 24
+targetSdk 34
+versionCode 1
+versionName "1.0"
+}
 
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
+buildFeatures{
+buildConfig true
+}
+
 }
 
 dependencies {
