@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AeroStock Atelier</title>
+
+<style>
+
+body{
+background:#87CEEB;
+font-family:Arial;
+color:black;
+padding:20px;
+}
+
+header{
+background:silver;
+padding:20px;
+border-radius:20px;
+text-align:center;
+}
+
+.panel{
+background:white;
+margin-top:20px;
+padding:15px;
+border-radius:15px;
+box-shadow:0 0 8px gray;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+}
+
+button{
+background:silver;
+font-weight:bold;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid gray;
+padding:8px;
+}
+
+.out{
+color:red;
+font-weight:bold;
+}
+
+.in{
+color:green;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>✈️🔧 AeroStock Atelier</h1>
+<p>Gestion d’outillage maintenance aéronautique militaire</p>
+</header>
+
+
+<div class="panel">
+<h2>Recherche</h2>
+
+<input placeholder="Rechercher ouvrier ou outil">
+</div>
+
+
+
+<div class="panel">
+
+<h2>Sortie Outil</h2>
+
+<input placeholder="Nom Ouvrier">
+
+<input placeholder="Nom Outil">
+
+<input placeholder="Numéro Série">
+
+<button>Enregistrer Sortie</button>
+
+</div>
+
+
+<div class="panel">
+
+<h2>Retour Outil</h2>
+
+<input placeholder="Numéro Série">
+
+<button>Enregistrer Retour</button>
+
+</div>
+
+
+
+<div class="panel">
+
+<h2>Liste Ouvriers</h2>
+
+<input placeholder="Ajouter Ouvrier">
+
+<button>Ajouter</button>
+
+<ul>
+<li>Ahmed</li>
+<li>Karim</li>
+</ul>
+
+</div>
+
+
+
+<div class="panel">
+
+<h2>Inventaire Outils</h2>
+
+<table>
+
+<tr>
+<th>Outil</th>
+<th>Série</th>
+<th>Etat</th>
+</tr>
+
+<tr>
+<td>Clé 12</td>
+<td>001</td>
+<td class="in">
+Disponible
+</td>
+</tr>
+
+<tr>
+<td>Tournevis</td>
+<td>002</td>
+<td class="out">
+Sortie
+</td>
+</tr>
+
+</table>
+
+</div>
+
+
+
+<div class="panel">
+
+<h2>Historique</h2>
+
+<table>
+
+<tr>
+<th>Ouvrier</th>
+<th>Outil</th>
+<th>Sortie</th>
+<th>Retour</th>
+</tr>
+
+<tr>
+<td>Ahmed</td>
+<td>Clé 12</td>
+<td>08:10</td>
+<td>16:30</td>
+</tr>
+
+</table>
+
+</div>
+
+
+</body>
+</html>
