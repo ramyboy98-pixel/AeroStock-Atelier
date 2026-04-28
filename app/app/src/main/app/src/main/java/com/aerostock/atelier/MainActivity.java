@@ -2,27 +2,22 @@ package com.aerostock.atelier;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.graphics.Color;
+import android.widget.TextView;
+import android.view.Gravity;
 
 public class MainActivity extends Activity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        WebView webView = new WebView(this);
-        webView.setWebViewClient(new WebViewClient());
+        TextView text = new TextView(this);
+        text.setText("AeroStock Atelier\nApplication ouverte avec succès");
+        text.setTextSize(24);
+        text.setTextColor(Color.BLACK);
+        text.setGravity(Gravity.CENTER);
+        text.setBackgroundColor(Color.rgb(135, 206, 235));
 
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
-        settings.setAllowFileAccess(true);
-        settings.setAllowContentAccess(true);
-
-        webView.loadUrl("file:///android_asset/index.html");
-
-        setContentView(webView);
+        setContentView(text);
     }
 }
