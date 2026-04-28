@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>AeroStock Atelier</title>
+
+<style>
+body{
+font-family:Arial;
+background:#87CEEB;
+color:black;
+margin:20px;
+}
+
+header{
+background:silver;
+padding:20px;
+border-radius:15px;
+text-align:center;
+}
+
+h1{
+margin:0;
+}
+
+.logo{
+font-size:50px;
+}
+
+.panel{
+background:white;
+padding:15px;
+margin-top:20px;
+border-radius:15px;
+box-shadow:0 0 8px gray;
+}
+
+input,select,button{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+}
+
+button{
+background:silver;
+font-weight:bold;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+background:white;
+}
+
+th,td{
+border:1px solid gray;
+padding:10px;
+}
+
+.status-in{
+color:green;
+font-weight:bold;
+}
+
+.status-out{
+color:red;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">
+✈️ 🔧
+</div>
+
+<h1>AeroStock Atelier Militaire</h1>
+<p>Gestion d'outillage maintenance aéronautique</p>
+</header>
+
+
+<div class="panel">
+<h2>Recherche</h2>
+
+<input placeholder="Rechercher ouvrier ou outil">
+</div>
+
+
+<div class="panel">
+<h2>Nouvelle Sortie Outil</h2>
+
+<input placeholder="Nom Ouvrier">
+
+<input placeholder="Nom Outil">
+
+<input placeholder="Numéro Série">
+
+<button>Enregistrer Sortie</button>
+</div>
+
+
+<div class="panel">
+<h2>Retour Outil</h2>
+
+<input placeholder="Numéro Série">
+
+<button>Enregistrer Retour</button>
+</div>
+
+
+<div class="panel">
+<h2>Liste Ouvriers</h2>
+
+<input placeholder="Ajouter ouvrier">
+
+<button>Ajouter</button>
+
+<ul>
+<li>Ahmed</li>
+<li>Karim</li>
+</ul>
+
+</div>
+
+
+<div class="panel">
+<h2>Inventaire Outils</h2>
+
+<table>
+<tr>
+<th>Outil</th>
+<th>Série</th>
+<th>Etat</th>
+</tr>
+
+<tr>
+<td>Clé 12</td>
+<td>001</td>
+<td class="status-in">
+Disponible
+</td>
+</tr>
+
+<tr>
+<td>Tournevis</td>
+<td>002</td>
+<td class="status-out">
+Sortie
+</td>
+</tr>
+
+</table>
+</div>
+
+
+<div
