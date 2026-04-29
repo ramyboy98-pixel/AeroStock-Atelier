@@ -3,8 +3,6 @@
 
     <application
         android:label="AeroStock Atelier"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
         <activity
