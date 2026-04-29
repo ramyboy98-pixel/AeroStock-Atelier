@@ -486,6 +486,8 @@
 <div class="page" id="page-log">
   <div class="card">
     <div class="card-title">📋 Journal Complet des Mouvements</div>
+    <button class="btn btn-primary" onclick="exportDailyPdf()">📄 Télécharger le journal du jour en PDF</button>
+    <br><br>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" placeholder="Rechercher dans le journal..." id="logSearch" oninput="renderLog()">
@@ -870,6 +872,28 @@ function renderStats() {
     <div class="stat-box red"><div class="stat-val">${outCount}</div><div class="stat-label">En Circulation</div></div>
     <div class="stat-box silver"><div class="stat-val">${workers}</div><div class="stat-label">Personnel Habilité</div></div>
   `;
+}
+
+
+function exportDailyPdf() {
+  const today = new Date().toDateString();
+
+  const dailyLogs = data.loans.filter(l => {
+    return new Date(l.checkoutTime).toDateString() === today;
+  }).map(l => ({
+    workerName: l.workerName,
+    toolName: l.toolName,
+    toolSerial: l.toolSerial,
+    checkoutTime: fmtDate(l.checkoutTime),
+    returnTime: l.returnTime ? fmtDate(l.returnTime) : "Non retourné"
+  }));
+
+  if (typeof AndroidPDF !== "undefined" && AndroidPDF.saveDailyPdf) {
+    AndroidPDF.saveDailyPdf(JSON.stringify(dailyLogs));
+    toast("PDF du journal quotidien téléchargé");
+  } else {
+    toast("Fonction PDF non disponible dans cette version APK", "error");
+  }
 }
 
 function renderAll() { renderStats(); renderActiveLoans(); renderLog(); renderToolsTable(); renderWorkersTable(); }
