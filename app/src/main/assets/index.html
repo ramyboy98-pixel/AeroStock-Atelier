@@ -379,6 +379,45 @@
   ::-webkit-scrollbar-track { background: var(--sky-bg); }
   ::-webkit-scrollbar-thumb { background: var(--sky-lite); border-radius: 4px; }
 
+
+  /* ===== LANGUAGE / RTL ===== */
+  .lang-toggle {
+    padding: 7px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--accent);
+    background: rgba(77,184,255,0.12);
+    color: #fff;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .lang-toggle:hover { background: var(--sky); }
+  body.rtl {
+    direction: rtl;
+    font-family: Arial, Tahoma, sans-serif;
+  }
+  body.rtl table,
+  body.rtl input,
+  body.rtl button {
+    direction: rtl;
+  }
+  body.rtl thead th { text-align: right; }
+  body.rtl .search-wrap input { padding: 9px 40px 9px 14px; }
+  body.rtl .search-icon { right: 12px; left: auto; }
+  body.rtl .card::before {
+    left: auto; right: 0;
+    border-left: none; border-right: 2px solid var(--accent);
+    border-radius: 0 10px 0 0;
+  }
+  body.rtl .card::after {
+    right: auto; left: 0;
+    border-right: none; border-left: 2px solid var(--border);
+    border-radius: 0 0 0 10px;
+  }
+
   @media (max-width: 640px) {
     header { padding: 8px 12px; }
     nav { padding: 6px 8px; overflow-x: auto; }
@@ -405,6 +444,7 @@
   </div>
 
   <div class="header-right">
+    <button class="lang-toggle" onclick="toggleLanguage()" id="langToggle">العربية</button>
     <div class="header-time">
       <span class="time-big" id="clockTime">--:--:--</span>
       <span id="clockDate">-- --- ----</span>
@@ -578,6 +618,137 @@
 <div id="toast"></div>
 
 <script>
+
+// ========== LANGUAGE ==========
+let currentLang = localStorage.getItem('aero_lang') || 'fr';
+
+const AR_MAP = {
+  "Magasin d'Outillage": "مخزن الأدوات",
+  "Atelier de Maintenance Aéronautique Militaire": "ورشة صيانة الطائرات العسكرية",
+  "ARMÉE DE L'AIR\nET DE L'ESPACE": "القوات الجوية\nوالفضاء",
+  "📤 Sortie d'Outil": "📤 إخراج أداة",
+  "📋 Journal": "📋 السجل",
+  "🔩 Inventaire": "🔩 المخزون",
+  "👷 Personnel": "👷 العمال",
+  "📤 Enregistrement de Sortie d'Outillage": "📤 تسجيل إخراج الأدوات",
+  "Technicien / Mécanicien": "الفني / الميكانيكي",
+  "Rechercher et ajouter un outil": "البحث وإضافة أداة",
+  "Outils sélectionnés pour la sortie": "الأدوات المختارة للإخراج",
+  "📤 Confirmer la Sortie": "📤 تأكيد الإخراج",
+  "📥 Retour d'Outillage — Outils en Circulation": "📥 إرجاع الأدوات — أدوات خارج المخزن",
+  "Agent": "العامل",
+  "Désignation": "اسم الأداة",
+  "N° Série": "الرقم التسلسلي",
+  "Date de Sortie": "تاريخ الإخراج",
+  "Action": "الإجراء",
+  "📋 Journal Complet des Mouvements": "📋 السجل الكامل للحركات",
+  "📄 Télécharger le journal du jour en PDF": "📄 تحميل سجل اليوم PDF",
+  "Sortie le": "وقت الإخراج",
+  "Retour le": "وقت الإرجاع",
+  "État": "الحالة",
+  "➕ Ajouter un Outil à l'Inventaire": "➕ إضافة أداة إلى المخزون",
+  "N° de Série": "الرقم التسلسلي",
+  "Catégorie": "الصنف",
+  "➕ Ajouter": "➕ إضافة",
+  "🔩 Inventaire des Outils": "🔩 جرد الأدوات",
+  "➕ Ajouter un Agent au Registre": "➕ إضافة عامل إلى السجل",
+  "Nom et Prénom": "الاسم واللقب",
+  "Matricule (optionnel)": "رقم التسجيل (اختياري)",
+  "Spécialité / Section": "التخصص / القسم",
+  "👷 Personnel Habilité": "👷 العمال المصرح لهم",
+  "Nom": "الاسم",
+  "Matricule": "رقم التسجيل",
+  "Spécialité": "التخصص",
+  "Outils en Main": "الأدوات المستلمة",
+  "Confirmation": "تأكيد",
+  "Annuler": "إلغاء",
+  "Supprimer": "حذف",
+  "Total Outillage": "إجمالي الأدوات",
+  "En Stock": "داخل المخزن",
+  "En Circulation": "خارج المخزن",
+  "Personnel Habilité": "العمال المصرح لهم",
+  "Aucun outil en circulation actuellement": "لا توجد أدوات خارج المخزن حاليًا",
+  "Aucun mouvement enregistré": "لا توجد حركة مسجلة",
+  "Inventaire vide": "المخزون فارغ",
+  "Aucun agent enregistré": "لا يوجد عمال مسجلون",
+  "Disponible": "متوفر",
+  "Sorti": "خارج",
+  "Retour": "إرجاع",
+  "Retirer": "إزالة",
+  "Non retourné": "لم يُرجع",
+  "Général": "عام",
+  "Outil ajouté à l'inventaire": "تمت إضافة الأداة إلى المخزون",
+  "Outil supprimé": "تم حذف الأداة",
+  "Agent ajouté au registre": "تمت إضافة العامل إلى السجل",
+  "Agent supprimé": "تم حذف العامل",
+  "Retour enregistré ✅": "تم تسجيل الإرجاع ✅",
+  "PDF du journal quotidien téléchargé": "تم تحميل سجل اليوم PDF",
+  "Fonction PDF non disponible dans cette version APK": "خاصية PDF غير متوفرة في هذه النسخة",
+  "Sélectionner un agent dans la liste": "اختر العامل من القائمة",
+  "Sélectionner au moins un outil": "اختر أداة واحدة على الأقل",
+  "Désignation et N° de série requis": "اسم الأداة والرقم التسلسلي مطلوبان",
+  "Ce numéro de série existe déjà": "هذا الرقم التسلسلي موجود مسبقًا",
+  "Nom de l'agent requis": "اسم العامل مطلوب"
+};
+
+const AR_PLACEHOLDERS = {
+  "Rechercher un agent...": "ابحث عن عامل...",
+  "Rechercher par désignation ou numéro de série...": "ابحث باسم الأداة أو الرقم التسلسلي...",
+  "Rechercher dans les outils en circulation...": "ابحث في الأدوات خارج المخزن...",
+  "Rechercher dans le journal...": "ابحث في السجل...",
+  "Ex : Clé dynamométrique 1/2": "مثال: مفتاح عزم 1/2",
+  "Ex : WR-2024-001": "مثال: WR-2024-001",
+  "Ex : Outillage cellule": "مثال: أدوات الهيكل",
+  "Rechercher dans l'inventaire...": "ابحث في المخزون...",
+  "Nom complet de l'agent": "الاسم الكامل للعامل",
+  "EMP-001": "EMP-001",
+  "Ex : Mécanicien cellule": "مثال: ميكانيكي هيكل",
+  "Rechercher un agent...": "ابحث عن عامل..."
+};
+
+function normalizeText(s) {
+  return (s || '').replace(/\s+/g, ' ').trim();
+}
+
+function translateString(s) {
+  if (currentLang !== 'ar') return s;
+  const clean = normalizeText(s);
+  return AR_MAP[clean] || s;
+}
+
+function applyLanguage() {
+  const isAr = currentLang === 'ar';
+  document.documentElement.lang = isAr ? 'ar' : 'fr';
+  document.body.classList.toggle('rtl', isAr);
+  document.getElementById('langToggle').textContent = isAr ? 'FR' : 'العربية';
+
+  document.querySelectorAll('h1, h2, span, label, button, th, td, div.card-title, div.stat-label, div.modal-title, p, .empty').forEach(el => {
+    if (el.children.length === 0) {
+      if (!el.dataset.frText) el.dataset.frText = el.textContent;
+      el.textContent = isAr ? (AR_MAP[normalizeText(el.dataset.frText)] || el.dataset.frText) : el.dataset.frText;
+    }
+  });
+
+  document.querySelectorAll('input').forEach(el => {
+    if (!el.dataset.frPlaceholder) el.dataset.frPlaceholder = el.placeholder || '';
+    el.placeholder = isAr ? (AR_PLACEHOLDERS[el.dataset.frPlaceholder] || el.dataset.frPlaceholder) : el.dataset.frPlaceholder;
+  });
+
+  const ticker = document.querySelector('.classified-bar span');
+  if (ticker) {
+    if (!ticker.dataset.frText) ticker.dataset.frText = ticker.textContent;
+    ticker.textContent = isAr
+      ? "✦ قاعدة جوية — ورشة الصيانة — قسم الأدوات ✦   الاستعمال مخصص فقط للعمال المصرح لهم ✦   يمنع إخراج أي أداة دون تسجيل ✦   فحص الأدوات إجباري قبل وبعد الاستعمال ✦   السلامة الجوية — لا مجال للتهاون ✦"
+      : ticker.dataset.frText;
+  }
+}
+
+function toggleLanguage() {
+  currentLang = currentLang === 'fr' ? 'ar' : 'fr';
+  localStorage.setItem('aero_lang', currentLang);
+  renderAll();
+}
+
 // ========== DATA ==========
 let data = {
   workers: [
@@ -627,7 +798,7 @@ function showPage(name) {
 // ========== TOAST ==========
 function toast(msg, type='success') {
   const el = document.getElementById('toast');
-  el.textContent = (type==='success'?'✅ ':'❌ ') + msg;
+  el.textContent = (type==='success'?'✅ ':'❌ ') + translateString(msg);
   el.className = 'show ' + type;
   setTimeout(() => el.className='', 2800);
 }
@@ -896,7 +1067,7 @@ function exportDailyPdf() {
   }
 }
 
-function renderAll() { renderStats(); renderActiveLoans(); renderLog(); renderToolsTable(); renderWorkersTable(); }
+function renderAll() { renderStats(); renderActiveLoans(); renderLog(); renderToolsTable(); renderWorkersTable(); applyLanguage(); }
 
 load(); renderAll();
 </script>
