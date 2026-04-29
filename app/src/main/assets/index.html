@@ -1,29 +1,880 @@
-package com.aerostock.atelier;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magasin d'Outillage — Atelier Aéronautique Militaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:      #0a7abf;
+    --sky-dark: #065a8c;
+    --sky-deep: #043d61;
+    --sky-bg:   #06304d;
+    --sky-card: #07405f;
+    --sky-lite: #0d5a82;
+    --silver:   #c8d8e8;
+    --silver-dim:#8aaabb;
+    --black:    #c8d8e8;
+    --accent:   #4db8ff;
+    --accent2:  #00d4ff;
+    --green:    #00e599;
+    --red:      #ff4d6d;
+    --border:   #1a5a7a;
+    --radius:   10px;
+    --shadow:   0 4px 28px rgba(0,0,0,0.5);
+  }
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.webkit.WebSettings;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-public class MainActivity extends Activity {
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--sky-bg);
+    color: var(--black);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 15% 5%, rgba(77,184,255,0.12) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 95%, rgba(0,212,255,0.08) 0%, transparent 45%),
+      repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(77,184,255,0.025) 60px, rgba(77,184,255,0.025) 61px),
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(77,184,255,0.025) 60px, rgba(77,184,255,0.025) 61px);
+  }
 
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-dark) 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow), 0 0 40px rgba(77,184,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px);
+    pointer-events: none;
+  }
 
-WebView web = new WebView(this);
-web.setWebViewClient(new WebViewClient());
+  .header-left { display: flex; align-items: center; gap: 12px; }
 
-WebSettings s = web.getSettings();
-s.setJavaScriptEnabled(true);
-s.setDomStorageEnabled(true);
-s.setAllowFileAccess(true);
-s.setAllowContentAccess(true);
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--sky) 0%, var(--accent) 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 18px rgba(77,184,255,0.4);
+    flex-shrink: 0;
+  }
 
-web.loadUrl("file:///android_asset/index.html");
+  .logo-text h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .logo-text .sub {
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'IBM Plex Mono', monospace;
+  }
 
-setContentView(web);
+  .mil-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 12px;
+    background: rgba(77,184,255,0.08);
+    border: 1px solid rgba(77,184,255,0.2);
+    border-radius: 6px;
+  }
+  .mil-badge .roundel {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: conic-gradient(#002395 0deg 120deg, #fff 120deg 240deg, #ed2939 240deg 360deg);
+    border: 2px solid rgba(255,255,255,0.25);
+    flex-shrink: 0;
+  }
+  .mil-badge .mil-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .header-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--accent2);
+    background: rgba(0,212,255,0.08);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,212,255,0.2);
+    line-height: 1.7;
+    text-align: center;
+  }
+  .header-time .time-big { font-size: 13px; font-weight: 600; display: block; }
+
+  /* Jet icon — mirrored so nose faces LEFT (toward the wrench) */
+  .jet-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--sky-dark) 0%, var(--sky) 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 0 18px rgba(77,184,255,0.4);
+    flex-shrink: 0;
+    transform: scaleX(-1);
+  }
+
+  /* ===== TICKER ===== */
+  .classified-bar {
+    background: repeating-linear-gradient(45deg, #061824, #061824 10px, #081f30 10px, #081f30 20px);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 5px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .classified-bar span {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    animation: marquee 22s linear infinite;
+  }
+  @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+  /* ===== NAV ===== */
+  nav {
+    background: var(--sky-deep);
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 2px;
+    padding: 7px 28px;
+  }
+  .nav-btn {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--silver-dim);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .nav-btn:hover { background: rgba(77,184,255,0.1); color: #fff; border-color: var(--border); }
+  .nav-btn.active { background: var(--sky); color: #fff; border-color: var(--accent); box-shadow: 0 0 14px rgba(77,184,255,0.3); }
+
+  /* ===== MAIN ===== */
+  main { max-width: 1300px; margin: 0 auto; padding: 22px 18px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--sky-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 16px; height: 16px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+    border-radius: 10px 0 0 0;
+  }
+  .card::after {
+    content: '';
+    position: absolute; bottom: 0; right: 0;
+    width: 16px; height: 16px;
+    border-bottom: 2px solid var(--border);
+    border-right: 2px solid var(--border);
+    border-radius: 0 0 10px 0;
+  }
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--accent);
+    display: flex; align-items: center; gap: 9px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 11px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* ===== STATS ===== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px; margin-bottom: 18px;
+  }
+  .stat-box {
+    background: var(--sky-card);
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: transform 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .stat-box::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent); }
+  .stat-box.green::before { background: var(--green); }
+  .stat-box.red::before   { background: var(--red); }
+  .stat-box.silver::before { background: var(--silver); }
+  .stat-box:hover { transform: translateY(-2px); }
+  .stat-val { font-size: 30px; font-weight: 900; font-family: 'IBM Plex Mono', monospace; color: var(--accent); }
+  .stat-box.green .stat-val  { color: var(--green); }
+  .stat-box.red .stat-val    { color: var(--red); }
+  .stat-box.silver .stat-val { color: var(--silver); }
+  .stat-label { font-size: 10px; color: var(--silver-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ===== SEARCH ===== */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input {
+    width: 100%;
+    padding: 9px 14px 9px 40px;
+    background: var(--sky-lite); border: 1px solid var(--border);
+    border-radius: 7px; color: #fff;
+    font-family: 'Exo 2', sans-serif; font-size: 13px;
+    transition: border 0.2s;
+  }
+  .search-wrap input::placeholder { color: var(--silver-dim); }
+  .search-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(77,184,255,0.12); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--silver-dim); font-size: 15px; }
+
+  /* ===== TABLE ===== */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: var(--sky-deep); padding: 10px 13px;
+    text-align: left; font-weight: 700; color: var(--accent);
+    white-space: nowrap; border-bottom: 2px solid var(--border);
+    text-transform: uppercase; letter-spacing: 0.7px; font-size: 10px;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(77,184,255,0.06); }
+  tbody td { padding: 10px 13px; vertical-align: middle; color: var(--silver); }
+  tbody td strong { color: #fff; }
+
+  /* ===== BADGE ===== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 100px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge.in  { background: rgba(0,229,153,0.14); color: var(--green); border: 1px solid rgba(0,229,153,0.28); }
+  .badge.out { background: rgba(255,77,109,0.14); color: var(--red);   border: 1px solid rgba(255,77,109,0.28); }
+  .badge.dot::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
+  /* ===== FORM ===== */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 11px; margin-bottom: 12px; }
+  .field label { display: block; font-size: 10px; color: var(--silver-dim); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; }
+  .field input, .field select {
+    width: 100%; padding: 8px 11px;
+    background: var(--sky-lite); border: 1px solid var(--border);
+    border-radius: 7px; color: #fff;
+    font-family: 'Exo 2', sans-serif; font-size: 13px;
+    transition: border 0.2s;
+  }
+  .field input::placeholder { color: var(--silver-dim); }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(77,184,255,0.12); }
+  .field select option { background: var(--sky-card); }
+
+  /* ===== AUTOCOMPLETE ===== */
+  .autocomplete { position: relative; }
+  .dropdown-list {
+    position: absolute; top: calc(100% + 3px); left: 0; right: 0;
+    background: var(--sky-lite); border: 1px solid var(--accent);
+    border-radius: 8px; max-height: 190px; overflow-y: auto;
+    z-index: 200; box-shadow: var(--shadow); display: none;
+  }
+  .dropdown-list.open { display: block; }
+  .dropdown-item { padding: 8px 13px; cursor: pointer; font-size: 13px; color: #fff; transition: background 0.15s; }
+  .dropdown-item:hover { background: rgba(77,184,255,0.2); color: var(--accent2); }
+  .dropdown-item .sub { font-size: 11px; color: var(--silver-dim); display: block; margin-top: 1px; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 8px 18px; border-radius: 7px; border: none;
+    font-family: 'Exo 2', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--sky) 0%, var(--accent) 100%); color: #000; box-shadow: 0 0 14px rgba(77,184,255,0.22); }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-danger  { background: var(--red); color: #fff; }
+  .btn-danger:hover  { filter: brightness(1.1); }
+  .btn-ghost { background: transparent; color: var(--silver-dim); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--sky-lite); color: #fff; }
+  .btn-green { background: var(--green); color: #000; }
+  .btn-green:hover { filter: brightness(1.1); }
+  .btn-sm { padding: 4px 11px; font-size: 10px; }
+
+  /* ===== CHECKOUT ITEMS ===== */
+  .checkout-items { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .checkout-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 13px; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .checkout-item:last-child { border-bottom: none; }
+  .checkout-item .tool-name { font-weight: 700; color: #fff; }
+  .checkout-item .tool-serial { font-size: 11px; color: var(--silver-dim); font-family: 'IBM Plex Mono', monospace; }
+
+  .log-out td { background: rgba(255,77,109,0.04); }
+
+  /* ===== MODAL ===== */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--sky-card); border: 1px solid var(--accent); border-radius: 12px; padding: 24px; width: 90%; max-width: 420px; box-shadow: var(--shadow), 0 0 28px rgba(77,184,255,0.15); animation: slideUp 0.2s ease; }
+  @keyframes slideUp { from { transform: translateY(22px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+  .modal p { color: var(--silver-dim); font-size: 13px; }
+  .modal-actions { display: flex; gap: 9px; justify-content: flex-end; margin-top: 16px; }
+
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed; bottom: 22px; left: 50%;
+    transform: translateX(-50%) translateY(68px);
+    background: var(--sky-card); color: #fff;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 20px; font-size: 12px; font-weight: 700;
+    z-index: 999; box-shadow: var(--shadow); transition: transform 0.3s;
+    font-family: 'Exo 2', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: var(--green); color: var(--green); }
+  #toast.error   { border-color: var(--red);   color: var(--red); }
+
+  /* ===== EMPTY ===== */
+  .empty { text-align: center; padding: 34px; color: var(--silver-dim); font-size: 13px; }
+  .empty .icon { font-size: 32px; display: block; margin-bottom: 8px; }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--sky-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--sky-lite); border-radius: 4px; }
+
+  @media (max-width: 640px) {
+    header { padding: 8px 12px; }
+    nav { padding: 6px 8px; overflow-x: auto; }
+    main { padding: 12px 8px; }
+    .nav-btn { padding: 7px 10px; font-size: 10px; }
+    .mil-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="header-left">
+    <div class="logo-icon">🔧</div>
+    <div class="logo-text">
+      <h1>Magasin d'Outillage</h1>
+      <span class="sub">Atelier de Maintenance Aéronautique Militaire</span>
+    </div>
+    <div class="mil-badge">
+      <div class="roundel"></div>
+      <div class="mil-text">ARMÉE DE L'AIR<br>ET DE L'ESPACE</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="header-time">
+      <span class="time-big" id="clockTime">--:--:--</span>
+      <span id="clockDate">-- --- ----</span>
+    </div>
+    <!-- Fighter jet, mirrored to face left -->
+    <div class="jet-icon">✈️</div>
+  </div>
+</header>
+
+<!-- ===== TICKER ===== -->
+<div class="classified-bar">
+  <span>
+    ✦ BASE AÉRIENNE — ATELIER DE MAINTENANCE — SECTION OUTILLAGE ✦ &nbsp;&nbsp;
+    USAGE STRICTEMENT RÉSERVÉ AU PERSONNEL HABILITÉ ✦ &nbsp;&nbsp;
+    TOUT EMPRUNT NON ENREGISTRÉ EST INTERDIT ✦ &nbsp;&nbsp;
+    VÉRIFICATION DES OUTILS OBLIGATOIRE AVANT ET APRÈS UTILISATION ✦ &nbsp;&nbsp;
+    SÉCURITÉ AÉRONAUTIQUE — TOLÉRANCE ZÉRO ✦ &nbsp;&nbsp;
+  </span>
+</div>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <button class="nav-btn active" onclick="showPage('checkout')" data-page="checkout">📤 Sortie d'Outil</button>
+  <button class="nav-btn" onclick="showPage('log')" data-page="log">📋 Journal</button>
+  <button class="nav-btn" onclick="showPage('tools')" data-page="tools">🔩 Inventaire</button>
+  <button class="nav-btn" onclick="showPage('workers')" data-page="workers">👷 Personnel</button>
+</nav>
+
+<main>
+
+<!-- ===== PAGE SORTIE ===== -->
+<div class="page active" id="page-checkout">
+
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="card">
+    <div class="card-title">📤 Enregistrement de Sortie d'Outillage</div>
+    <div class="form-grid">
+      <div class="field autocomplete">
+        <label>Technicien / Mécanicien</label>
+        <input type="text" id="workerInput" placeholder="Rechercher un agent..." autocomplete="off"
+          oninput="filterList('workerInput','workerDropdown','workers','name')">
+        <div class="dropdown-list" id="workerDropdown"></div>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field autocomplete" style="grid-column:1/-1">
+        <label>Rechercher et ajouter un outil</label>
+        <input type="text" id="toolSearchInput" placeholder="Rechercher par désignation ou numéro de série..." autocomplete="off"
+          oninput="filterList('toolSearchInput','toolDropdown','tools','nameSerial')">
+        <div class="dropdown-list" id="toolDropdown"></div>
+      </div>
+    </div>
+    <div id="selectedToolsWrap" style="display:none;margin-bottom:12px;">
+      <label style="font-size:10px;color:var(--silver-dim);font-weight:700;margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:1px;">Outils sélectionnés pour la sortie</label>
+      <div class="checkout-items" id="selectedToolsList"></div>
+    </div>
+    <button class="btn btn-primary" onclick="submitCheckout()">📤 Confirmer la Sortie</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📥 Retour d'Outillage — Outils en Circulation</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher dans les outils en circulation..." id="returnSearch" oninput="renderActiveLoans()">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Agent</th><th>Désignation</th><th>N° Série</th><th>Date de Sortie</th><th>Action</th>
+        </tr></thead>
+        <tbody id="activeLoansBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE JOURNAL ===== -->
+<div class="page" id="page-log">
+  <div class="card">
+    <div class="card-title">📋 Journal Complet des Mouvements</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher dans le journal..." id="logSearch" oninput="renderLog()">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Agent</th><th>Désignation</th><th>N° Série</th><th>Sortie le</th><th>Retour le</th><th>État</th>
+        </tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE INVENTAIRE ===== -->
+<div class="page" id="page-tools">
+  <div class="card">
+    <div class="card-title">➕ Ajouter un Outil à l'Inventaire</div>
+    <div class="form-grid">
+      <div class="field"><label>Désignation</label><input type="text" id="newToolName" placeholder="Ex : Clé dynamométrique 1/2"></div>
+      <div class="field"><label>N° de Série</label><input type="text" id="newToolSerial" placeholder="Ex : WR-2024-001"></div>
+      <div class="field"><label>Catégorie</label><input type="text" id="newToolCat" placeholder="Ex : Outillage cellule"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addTool()">➕ Ajouter</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔩 Inventaire des Outils</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher dans l'inventaire..." id="toolsSearch" oninput="renderToolsTable()">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Désignation</th><th>N° Série</th><th>Catégorie</th><th>État</th><th>Action</th>
+        </tr></thead>
+        <tbody id="toolsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE PERSONNEL ===== -->
+<div class="page" id="page-workers">
+  <div class="card">
+    <div class="card-title">➕ Ajouter un Agent au Registre</div>
+    <div class="form-grid">
+      <div class="field"><label>Nom et Prénom</label><input type="text" id="newWorkerName" placeholder="Nom complet de l'agent"></div>
+      <div class="field"><label>Matricule (optionnel)</label><input type="text" id="newWorkerID" placeholder="EMP-001"></div>
+      <div class="field"><label>Spécialité / Section</label><input type="text" id="newWorkerDept" placeholder="Ex : Mécanicien cellule"></div>
+    </div>
+    <button class="btn btn-primary" onclick="addWorker()">➕ Ajouter</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">👷 Personnel Habilité</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher un agent..." id="workersSearch" oninput="renderWorkersTable()">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Nom</th><th>Matricule</th><th>Spécialité</th><th>Outils en Main</th><th>Action</th>
+        </tr></thead>
+        <tbody id="workersBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Confirmation</div>
+    <p id="modalMsg"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" id="modalConfirmBtn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ========== DATA ==========
+let data = {
+  workers: [
+    { id: 'w1', name: 'Sgt. Martin Dupont',   empId: 'EMP-001', dept: 'Mécanicien cellule' },
+    { id: 'w2', name: 'Adj. Karim Benali',    empId: 'EMP-002', dept: 'Motoriste réacteur' },
+    { id: 'w3', name: 'Cpl. Lucas Bernard',   empId: 'EMP-003', dept: 'Avionique / électronique' },
+  ],
+  tools: [
+    { id: 't1', name: 'Clé dynamométrique 1/2"',  serial: 'TW-001', cat: 'Outillage mécanique',    status: 'in' },
+    { id: 't2', name: 'Clé dynamométrique 3/8"',  serial: 'TW-002', cat: 'Outillage mécanique',    status: 'in' },
+    { id: 't3', name: 'Tournevis plat SL-6',       serial: 'SD-001', cat: 'Outillage à main',       status: 'in' },
+    { id: 't4', name: 'Tournevis Phillips PH2',    serial: 'SD-002', cat: 'Outillage à main',       status: 'in' },
+    { id: 't5', name: 'Pince multiprise',          serial: 'PL-001', cat: 'Pince / Étau',           status: 'in' },
+    { id: 't6', name: 'Manomètre hydraulique',     serial: 'HG-001', cat: 'Mesure & contrôle',      status: 'in' },
+    { id: 't7', name: 'Riveteur pneumatique',      serial: 'RV-001', cat: 'Outillage pneumatique',  status: 'in' },
+    { id: 't8', name: 'Clé à pipe 13mm',           serial: 'TW-013', cat: 'Outillage mécanique',    status: 'in' },
+  ],
+  loans: [],
+  nextId: 100
+};
+
+let selectedTools = [];
+
+function save() { try { localStorage.setItem('warehouseFR', JSON.stringify(data)); } catch(e){} }
+function load() { try { const r = localStorage.getItem('warehouseFR'); if (r) data = JSON.parse(r); } catch(e){} }
+
+// ========== CLOCK ==========
+const DAYS   = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+function updateClock() {
+  const n = new Date();
+  const pad = v => String(v).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  document.getElementById('clockDate').textContent = `${DAYS[n.getDay()]} ${n.getDate()} ${MONTHS[n.getMonth()]} ${n.getFullYear()}`;
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ========== NAV ==========
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelector(`[data-page="${name}"]`).classList.add('active');
+  renderAll();
 }
 
+// ========== TOAST ==========
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = (type==='success'?'✅ ':'❌ ') + msg;
+  el.className = 'show ' + type;
+  setTimeout(() => el.className='', 2800);
 }
+
+// ========== MODAL ==========
+function openModal(title, msg, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalConfirmBtn').onclick = () => { closeModal(); cb(); };
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+// ========== UTILS ==========
+function genId() { return 'id_' + (++data.nextId); }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  const pad = v => String(v).padStart(2,'0');
+  return `${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function nowISO() { return new Date().toISOString(); }
+
+// ========== AUTOCOMPLETE ==========
+function filterList(inputId, dropId, listKey, mode) {
+  const val = document.getElementById(inputId).value.trim().toLowerCase();
+  const drop = document.getElementById(dropId);
+  drop.innerHTML = '';
+  if (!val) { drop.classList.remove('open'); return; }
+
+  let items = data[listKey];
+  if (listKey === 'tools') items = items.filter(t => t.status === 'in');
+
+  const filtered = items.filter(item => {
+    if (mode === 'name') return item.name.toLowerCase().includes(val);
+    if (mode === 'nameSerial') return item.name.toLowerCase().includes(val) || item.serial.toLowerCase().includes(val);
+    return false;
+  }).slice(0, 8);
+
+  if (!filtered.length) { drop.classList.remove('open'); return; }
+
+  filtered.forEach(item => {
+    const d = document.createElement('div');
+    d.className = 'dropdown-item';
+    if (listKey === 'workers') {
+      d.innerHTML = `${item.name} <span class="sub">${item.empId||''} ${item.dept?'· '+item.dept:''}</span>`;
+      d.onclick = () => {
+        document.getElementById(inputId).value = item.name;
+        document.getElementById(inputId).dataset.id = item.id;
+        drop.classList.remove('open');
+      };
+    } else {
+      if (selectedTools.find(s => s.id === item.id)) return;
+      d.innerHTML = `${item.name} <span class="sub">${item.serial} · ${item.cat}</span>`;
+      d.onclick = () => {
+        addSelectedTool(item);
+        document.getElementById(inputId).value = '';
+        drop.classList.remove('open');
+      };
+    }
+    drop.appendChild(d);
+  });
+  if (drop.children.length) drop.classList.add('open');
+  else drop.classList.remove('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.autocomplete'))
+    document.querySelectorAll('.dropdown-list').forEach(d => d.classList.remove('open'));
+});
+
+// ========== SELECTED TOOLS ==========
+function addSelectedTool(tool) { selectedTools.push(tool); renderSelectedTools(); }
+function removeSelectedTool(id) { selectedTools = selectedTools.filter(t => t.id !== id); renderSelectedTools(); }
+function renderSelectedTools() {
+  const wrap = document.getElementById('selectedToolsWrap');
+  const list = document.getElementById('selectedToolsList');
+  if (!selectedTools.length) { wrap.style.display='none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = selectedTools.map(t => `
+    <div class="checkout-item">
+      <div>
+        <div class="tool-name">🔧 ${t.name}</div>
+        <div class="tool-serial">${t.serial} · ${t.cat}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="removeSelectedTool('${t.id}')">✕ Retirer</button>
+    </div>
+  `).join('');
+}
+
+// ========== CHECKOUT ==========
+function submitCheckout() {
+  const input = document.getElementById('workerInput');
+  const workerId = input.dataset.id;
+  if (!workerId || !data.workers.find(w => w.id === workerId)) { toast('Sélectionner un agent dans la liste', 'error'); return; }
+  if (!selectedTools.length) { toast('Sélectionner au moins un outil', 'error'); return; }
+  const now = nowISO();
+  const workerName = input.value.trim();
+  selectedTools.forEach(tool => {
+    data.loans.push({ id: genId(), workerId, workerName, toolId: tool.id, toolName: tool.name, toolSerial: tool.serial, toolCat: tool.cat, checkoutTime: now, returnTime: null });
+    const t = data.tools.find(x => x.id === tool.id);
+    if (t) t.status = 'out';
+  });
+  save();
+  toast(`Sortie enregistrée — ${selectedTools.length} outil(s)`);
+  selectedTools = [];
+  input.value = ''; delete input.dataset.id;
+  document.getElementById('selectedToolsWrap').style.display = 'none';
+  document.getElementById('selectedToolsList').innerHTML = '';
+  renderAll();
+}
+
+// ========== RETURN ==========
+function returnTool(loanId) {
+  const loan = data.loans.find(l => l.id === loanId);
+  if (!loan) return;
+  loan.returnTime = nowISO();
+  const t = data.tools.find(x => x.id === loan.toolId);
+  if (t) t.status = 'in';
+  save(); toast('Retour enregistré ✅'); renderAll();
+}
+
+// ========== ACTIVE LOANS ==========
+function renderActiveLoans() {
+  const q = (document.getElementById('returnSearch')?.value||'').toLowerCase();
+  const active = data.loans.filter(l => !l.returnTime && (!q||l.workerName.toLowerCase().includes(q)||l.toolName.toLowerCase().includes(q)||l.toolSerial.toLowerCase().includes(q)));
+  const body = document.getElementById('activeLoansBody');
+  if (!active.length) { body.innerHTML=`<tr><td colspan="5" class="empty"><span class="icon">✅</span>Aucun outil en circulation actuellement</td></tr>`; return; }
+  body.innerHTML = active.map(l => `
+    <tr class="log-out">
+      <td><strong>${l.workerName}</strong></td>
+      <td>${l.toolName}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${l.toolSerial}</td>
+      <td style="font-size:11px;color:var(--silver-dim);">${fmtDate(l.checkoutTime)}</td>
+      <td><button class="btn btn-green btn-sm" onclick="returnTool('${l.id}')">📥 Retour</button></td>
+    </tr>
+  `).join('');
+}
+
+// ========== LOG ==========
+function renderLog() {
+  const q = (document.getElementById('logSearch')?.value||'').toLowerCase();
+  const logs = [...data.loans].reverse().filter(l => !q||l.workerName.toLowerCase().includes(q)||l.toolName.toLowerCase().includes(q)||l.toolSerial.toLowerCase().includes(q));
+  const body = document.getElementById('logBody');
+  if (!logs.length) { body.innerHTML=`<tr><td colspan="6" class="empty"><span class="icon">📋</span>Aucun mouvement enregistré</td></tr>`; return; }
+  body.innerHTML = logs.map(l => `
+    <tr class="${l.returnTime?'':'log-out'}">
+      <td><strong>${l.workerName}</strong></td>
+      <td>${l.toolName}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${l.toolSerial}</td>
+      <td style="font-size:11px;color:var(--silver-dim);">${fmtDate(l.checkoutTime)}</td>
+      <td style="font-size:11px;color:var(--silver-dim);">${fmtDate(l.returnTime)}</td>
+      <td>${l.returnTime?'<span class="badge in dot">En Stock</span>':'<span class="badge out dot">Sorti</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+// ========== TOOLS TABLE ==========
+function renderToolsTable() {
+  const q = (document.getElementById('toolsSearch')?.value||'').toLowerCase();
+  const list = data.tools.filter(t => !q||t.name.toLowerCase().includes(q)||t.serial.toLowerCase().includes(q)||t.cat.toLowerCase().includes(q));
+  const body = document.getElementById('toolsBody');
+  if (!list.length) { body.innerHTML=`<tr><td colspan="5" class="empty"><span class="icon">🔩</span>Inventaire vide</td></tr>`; return; }
+  body.innerHTML = list.map(t => `
+    <tr>
+      <td><strong>${t.name}</strong></td>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${t.serial}</td>
+      <td style="font-size:12px;color:var(--silver-dim);">${t.cat}</td>
+      <td>${t.status==='in'?'<span class="badge in dot">En Stock</span>':'<span class="badge out dot">Sorti</span>'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteTool('${t.id}','${t.name}')"${t.status==='out'?' disabled title="Outil actuellement sorti"':''}>🗑 Supprimer</button></td>
+    </tr>
+  `).join('');
+}
+
+function addTool() {
+  const name = document.getElementById('newToolName').value.trim();
+  const serial = document.getElementById('newToolSerial').value.trim();
+  const cat = document.getElementById('newToolCat').value.trim();
+  if (!name||!serial) { toast('Désignation et N° de série requis', 'error'); return; }
+  if (data.tools.find(t => t.serial===serial)) { toast('Ce numéro de série existe déjà', 'error'); return; }
+  data.tools.push({ id: genId(), name, serial, cat: cat||'Général', status: 'in' });
+  save();
+  ['newToolName','newToolSerial','newToolCat'].forEach(id => document.getElementById(id).value='');
+  toast('Outil ajouté à l\'inventaire'); renderToolsTable();
+}
+
+function deleteTool(id, name) {
+  openModal('Suppression Outil', `Confirmer la suppression de "${name}" ?`, () => {
+    data.tools = data.tools.filter(t => t.id!==id);
+    data.loans = data.loans.filter(l => l.toolId!==id);
+    save(); toast('Outil supprimé'); renderToolsTable();
+  });
+}
+
+// ========== WORKERS TABLE ==========
+function renderWorkersTable() {
+  const q = (document.getElementById('workersSearch')?.value||'').toLowerCase();
+  const list = data.workers.filter(w => !q||w.name.toLowerCase().includes(q)||(w.empId||'').toLowerCase().includes(q)||(w.dept||'').toLowerCase().includes(q));
+  const body = document.getElementById('workersBody');
+  if (!list.length) { body.innerHTML=`<tr><td colspan="5" class="empty"><span class="icon">👷</span>Aucun agent enregistré</td></tr>`; return; }
+  body.innerHTML = list.map(w => {
+    const held = data.loans.filter(l => l.workerId===w.id && !l.returnTime).length;
+    return `
+      <tr>
+        <td><strong>${w.name}</strong></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${w.empId||'—'}</td>
+        <td style="font-size:12px;color:var(--silver-dim);">${w.dept||'—'}</td>
+        <td>${held>0?`<span class="badge out">${held} outil(s)</span>`:'<span style="color:var(--silver-dim)">0</span>'}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="deleteWorker('${w.id}','${w.name}')"${held>0?' disabled title="Outils non retournés"':''}>🗑 Supprimer</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function addWorker() {
+  const name = document.getElementById('newWorkerName').value.trim();
+  const empId = document.getElementById('newWorkerID').value.trim();
+  const dept = document.getElementById('newWorkerDept').value.trim();
+  if (!name) { toast("Nom de l'agent requis", 'error'); return; }
+  data.workers.push({ id: genId(), name, empId, dept });
+  save();
+  ['newWorkerName','newWorkerID','newWorkerDept'].forEach(id => document.getElementById(id).value='');
+  toast('Agent ajouté au registre'); renderWorkersTable();
+}
+
+function deleteWorker(id, name) {
+  openModal('Suppression Agent', `Confirmer la suppression de "${name}" ?`, () => {
+    data.workers = data.workers.filter(w => w.id!==id);
+    save(); toast('Agent supprimé'); renderWorkersTable();
+  });
+}
+
+// ========== STATS ==========
+function renderStats() {
+  const total    = data.tools.length;
+  const inCount  = data.tools.filter(t => t.status==='in').length;
+  const outCount = data.tools.filter(t => t.status==='out').length;
+  const workers  = data.workers.length;
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-box"><div class="stat-val">${total}</div><div class="stat-label">Total Outillage</div></div>
+    <div class="stat-box green"><div class="stat-val">${inCount}</div><div class="stat-label">En Stock</div></div>
+    <div class="stat-box red"><div class="stat-val">${outCount}</div><div class="stat-label">En Circulation</div></div>
+    <div class="stat-box silver"><div class="stat-val">${workers}</div><div class="stat-label">Personnel Habilité</div></div>
+  `;
+}
+
+function renderAll() { renderStats(); renderActiveLoans(); renderLog(); renderToolsTable(); renderWorkersTable(); }
+
+load(); renderAll();
+</script>
+</body>
+</html>
