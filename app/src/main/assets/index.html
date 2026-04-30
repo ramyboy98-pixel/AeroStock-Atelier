@@ -418,6 +418,35 @@
     border-radius: 0 0 0 10px;
   }
 
+
+
+  /* ===== SETTINGS DRAWER ===== */
+  .drawer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 700; display: none;
+  }
+  .drawer-overlay.open { display: block; }
+  .settings-drawer {
+    position: fixed; top: 0; right: -340px; width: 320px; max-width: 88vw; height: 100vh;
+    background: var(--sky-card); border-left: 2px solid var(--accent);
+    box-shadow: var(--shadow); z-index: 800; padding: 18px; transition: right .25s ease;
+    overflow-y: auto;
+  }
+  .settings-drawer.open { right: 0; }
+  body.rtl .settings-drawer { right: auto; left: -340px; border-left: none; border-right: 2px solid var(--accent); }
+  body.rtl .settings-drawer.open { left: 0; }
+  .settings-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; border-bottom:1px solid var(--border); padding-bottom:12px; }
+  .settings-head h2 { color: var(--accent); font-family:'Rajdhani',sans-serif; font-size:20px; letter-spacing:1px; }
+  .settings-section { margin-bottom: 18px; padding: 14px; border:1px solid var(--border); border-radius:10px; background: rgba(0,0,0,.12); }
+  .settings-section label { display:block; color:var(--silver-dim); font-size:11px; text-transform:uppercase; font-weight:700; margin-bottom:8px; letter-spacing:.7px; }
+  .settings-section select, .settings-section input[type="checkbox"] { margin-top:6px; }
+  .settings-section select {
+    width:100%; padding:10px; background:var(--sky-lite); color:#fff; border:1px solid var(--border); border-radius:8px;
+  }
+  .settings-section p { color:var(--silver-dim); font-size:12px; line-height:1.5; margin-top:8px; }
+  .close-drawer { background: transparent; border:1px solid var(--border); color:#fff; border-radius:8px; padding:7px 10px; cursor:pointer; }
+  .log-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
   @media (max-width: 640px) {
     header { padding: 8px 12px; }
     nav { padding: 6px 8px; overflow-x: auto; }
@@ -444,7 +473,7 @@
   </div>
 
   <div class="header-right">
-    <button class="lang-toggle" onclick="toggleLanguage()" id="langToggle">العربية</button>
+    <button class="lang-toggle" onclick="openSettings()" id="settingsBtn">⚙️ Paramètres</button>
     <div class="header-time">
       <span class="time-big" id="clockTime">--:--:--</span>
       <span id="clockDate">-- --- ----</span>
@@ -453,6 +482,48 @@
     <div class="jet-icon">✈️</div>
   </div>
 </header>
+
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeSettings()"></div>
+<aside class="settings-drawer" id="settingsDrawer">
+  <div class="settings-head">
+    <h2 data-i18n-key="settingsTitle">⚙️ Paramètres</h2>
+    <button class="close-drawer" onclick="closeSettings()">✕</button>
+  </div>
+
+  <div class="settings-section">
+    <label data-i18n-key="languageLabel">Langue de l'application</label>
+    <select id="languageSelect" onchange="setLanguage(this.value)">
+      <option value="fr">Français</option>
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <div class="settings-section">
+    <label data-i18n-key="themeLabel">Couleurs de l'interface</label>
+    <select id="themeSelect" onchange="setTheme(this.value)">
+      <option value="blue">Bleu aéronautique</option>
+      <option value="dark">Noir tactique</option>
+      <option value="green">Vert militaire</option>
+      <option value="silver">Argent clair</option>
+    </select>
+  </div>
+
+  <div class="settings-section">
+    <label data-i18n-key="editLogLabel">Modification du journal</label>
+    <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;color:var(--silver);">
+      <input type="checkbox" id="editLogToggle" onchange="setEditLogMode(this.checked)">
+      <span data-i18n-key="editLogToggleText">Activer les boutons de modification dans le journal</span>
+    </label>
+    <p data-i18n-key="editLogHelp">Permet de marquer un retour, annuler un retour ou supprimer une ligne du journal.</p>
+  </div>
+
+  <div class="settings-section">
+    <label data-i18n-key="recordsLabel">Conservation des registres</label>
+    <p data-i18n-key="recordsHelp">Tous les mouvements sont conservés dans le téléphone. Le PDF exporte désormais tout le journal, pas seulement le jour actuel.</p>
+  </div>
+</aside>
+
 
 <!-- ===== TICKER ===== -->
 <div class="classified-bar">
@@ -526,7 +597,7 @@
 <div class="page" id="page-log">
   <div class="card">
     <div class="card-title">📋 Journal Complet des Mouvements</div>
-    <button class="btn btn-primary" onclick="exportDailyPdf()">📄 Télécharger le journal du jour en PDF</button>
+    <button class="btn btn-primary" onclick="exportDailyPdf()">📄 Télécharger tout le journal en PDF</button>
     <br><br>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -535,7 +606,7 @@
     <div class="tbl-wrap">
       <table>
         <thead><tr>
-          <th>Agent</th><th>Désignation</th><th>N° Série</th><th>Sortie le</th><th>Retour le</th><th>État</th>
+          <th>Agent</th><th>Désignation</th><th>N° Série</th><th>Sortie le</th><th>Retour le</th><th>État</th><th>Modification</th>
         </tr></thead>
         <tbody id="logBody"></tbody>
       </table>
@@ -619,136 +690,131 @@
 
 <script>
 
-// ========== LANGUAGE ==========
+// ========== SETTINGS / LANGUAGE / THEME ==========
 let currentLang = localStorage.getItem('aero_lang') || 'fr';
+let editLogMode = localStorage.getItem('aero_edit_log') === '1';
+let currentTheme = localStorage.getItem('aero_theme') || 'blue';
 
 const AR_MAP = {
-  "Magasin d'Outillage": "مخزن الأدوات",
-  "Atelier de Maintenance Aéronautique Militaire": "ورشة صيانة الطائرات العسكرية",
-  "ARMÉE DE L'AIR\nET DE L'ESPACE": "القوات الجوية\nوالفضاء",
-  "📤 Sortie d'Outil": "📤 إخراج أداة",
-  "📋 Journal": "📋 السجل",
-  "🔩 Inventaire": "🔩 المخزون",
-  "👷 Personnel": "👷 العمال",
-  "📤 Enregistrement de Sortie d'Outillage": "📤 تسجيل إخراج الأدوات",
-  "Technicien / Mécanicien": "الفني / الميكانيكي",
-  "Rechercher et ajouter un outil": "البحث وإضافة أداة",
-  "Outils sélectionnés pour la sortie": "الأدوات المختارة للإخراج",
-  "📤 Confirmer la Sortie": "📤 تأكيد الإخراج",
-  "📥 Retour d'Outillage — Outils en Circulation": "📥 إرجاع الأدوات — أدوات خارج المخزن",
-  "Agent": "العامل",
-  "Désignation": "اسم الأداة",
-  "N° Série": "الرقم التسلسلي",
-  "Date de Sortie": "تاريخ الإخراج",
-  "Action": "الإجراء",
-  "📋 Journal Complet des Mouvements": "📋 السجل الكامل للحركات",
-  "📄 Télécharger le journal du jour en PDF": "📄 تحميل سجل اليوم PDF",
-  "Sortie le": "وقت الإخراج",
-  "Retour le": "وقت الإرجاع",
-  "État": "الحالة",
-  "➕ Ajouter un Outil à l'Inventaire": "➕ إضافة أداة إلى المخزون",
-  "N° de Série": "الرقم التسلسلي",
-  "Catégorie": "الصنف",
-  "➕ Ajouter": "➕ إضافة",
-  "🔩 Inventaire des Outils": "🔩 جرد الأدوات",
-  "➕ Ajouter un Agent au Registre": "➕ إضافة عامل إلى السجل",
-  "Nom et Prénom": "الاسم واللقب",
-  "Matricule (optionnel)": "رقم التسجيل (اختياري)",
-  "Spécialité / Section": "التخصص / القسم",
-  "👷 Personnel Habilité": "👷 العمال المصرح لهم",
-  "Nom": "الاسم",
-  "Matricule": "رقم التسجيل",
-  "Spécialité": "التخصص",
-  "Outils en Main": "الأدوات المستلمة",
-  "Confirmation": "تأكيد",
-  "Annuler": "إلغاء",
-  "Supprimer": "حذف",
-  "Total Outillage": "إجمالي الأدوات",
-  "En Stock": "داخل المخزن",
-  "En Circulation": "خارج المخزن",
-  "Personnel Habilité": "العمال المصرح لهم",
-  "Aucun outil en circulation actuellement": "لا توجد أدوات خارج المخزن حاليًا",
-  "Aucun mouvement enregistré": "لا توجد حركة مسجلة",
-  "Inventaire vide": "المخزون فارغ",
-  "Aucun agent enregistré": "لا يوجد عمال مسجلون",
-  "Disponible": "متوفر",
-  "Sorti": "خارج",
-  "Retour": "إرجاع",
-  "Retirer": "إزالة",
-  "Non retourné": "لم يُرجع",
-  "Général": "عام",
-  "Outil ajouté à l'inventaire": "تمت إضافة الأداة إلى المخزون",
-  "Outil supprimé": "تم حذف الأداة",
-  "Agent ajouté au registre": "تمت إضافة العامل إلى السجل",
-  "Agent supprimé": "تم حذف العامل",
-  "Retour enregistré ✅": "تم تسجيل الإرجاع ✅",
-  "PDF du journal quotidien téléchargé": "تم تحميل سجل اليوم PDF",
-  "Fonction PDF non disponible dans cette version APK": "خاصية PDF غير متوفرة في هذه النسخة",
-  "Sélectionner un agent dans la liste": "اختر العامل من القائمة",
-  "Sélectionner au moins un outil": "اختر أداة واحدة على الأقل",
-  "Désignation et N° de série requis": "اسم الأداة والرقم التسلسلي مطلوبان",
-  "Ce numéro de série existe déjà": "هذا الرقم التسلسلي موجود مسبقًا",
-  "Nom de l'agent requis": "اسم العامل مطلوب"
+  "Magasin d'Outillage": "مخزن الأدوات", "Atelier de Maintenance Aéronautique Militaire": "ورشة صيانة الطائرات العسكرية",
+  "ARMÉE DE L'AIR ET DE L'ESPACE": "القوات الجوية والفضاء", "⚙️ Paramètres": "⚙️ الإعدادات",
+  "📤 Sortie d'Outil": "📤 إخراج أداة", "📋 Journal": "📋 السجل", "🔩 Inventaire": "🔩 المخزون", "👷 Personnel": "👷 العمال",
+  "📤 Enregistrement de Sortie d'Outillage": "📤 تسجيل إخراج الأدوات", "Technicien / Mécanicien": "الفني / الميكانيكي",
+  "Rechercher et ajouter un outil": "البحث وإضافة أداة", "Outils sélectionnés pour la sortie": "الأدوات المختارة للإخراج",
+  "📤 Confirmer la Sortie": "📤 تأكيد الإخراج", "📥 Retour d'Outillage — Outils en Circulation": "📥 إرجاع الأدوات — أدوات خارج المخزن",
+  "Agent": "العامل", "Désignation": "اسم الأداة", "N° Série": "الرقم التسلسلي", "Date de Sortie": "تاريخ الإخراج", "Action": "الإجراء",
+  "📋 Journal Complet des Mouvements": "📋 السجل الكامل للحركات", "📄 Télécharger tout le journal en PDF": "📄 تحميل السجل الكامل PDF",
+  "Sortie le": "وقت الإخراج", "Retour le": "وقت الإرجاع", "État": "الحالة", "Modification": "التعديل",
+  "➕ Ajouter un Outil à l'Inventaire": "➕ إضافة أداة إلى المخزون", "N° de Série": "الرقم التسلسلي", "Catégorie": "الصنف", "➕ Ajouter": "➕ إضافة",
+  "🔩 Inventaire des Outils": "🔩 جرد الأدوات", "➕ Ajouter un Agent au Registre": "➕ إضافة عامل إلى السجل", "Nom et Prénom": "الاسم واللقب",
+  "Matricule (optionnel)": "رقم التسجيل (اختياري)", "Spécialité / Section": "التخصص / القسم", "👷 Personnel Habilité": "👷 العمال المصرح لهم",
+  "Nom": "الاسم", "Matricule": "رقم التسجيل", "Spécialité": "التخصص", "Outils en Main": "الأدوات المستلمة",
+  "Confirmation": "تأكيد", "Annuler": "إلغاء", "Supprimer": "حذف", "Total Outillage": "إجمالي الأدوات", "En Stock": "داخل المخزن",
+  "En Circulation": "خارج المخزن", "Personnel Habilité": "العمال المصرح لهم", "Aucun outil en circulation actuellement": "لا توجد أدوات خارج المخزن حاليًا",
+  "Aucun mouvement enregistré": "لا توجد حركة مسجلة", "Inventaire vide": "المخزون فارغ", "Aucun agent enregistré": "لا يوجد عمال مسجلون",
+  "Retour": "إرجاع", "Retirer": "إزالة", "Non retourné": "لم يُرجع", "Marquer retour": "تسجيل إرجاع", "Annuler retour": "إلغاء الإرجاع",
+  "Langue de l'application": "لغة التطبيق", "Couleurs de l'interface": "ألوان الواجهة", "Modification du journal": "تعديل السجل",
+  "Activer les boutons de modification dans le journal": "تفعيل أزرار تعديل السجل", "Permet de marquer un retour, annuler un retour ou supprimer une ligne du journal.": "يسمح بتسجيل الإرجاع أو إلغائه أو حذف سطر من السجل.",
+  "Conservation des registres": "حفظ السجلات", "Tous les mouvements sont conservés dans le téléphone. Le PDF exporte désormais tout le journal, pas seulement le jour actuel.": "كل الحركات محفوظة في الهاتف. ملف PDF يصدّر الآن السجل الكامل وليس سجل اليوم فقط.",
+  "PDF du journal complet téléchargé": "تم تحميل السجل الكامل PDF", "Fonction PDF non disponible dans cette version APK": "خاصية PDF غير متوفرة في هذه النسخة"
 };
 
-const AR_PLACEHOLDERS = {
-  "Rechercher un agent...": "ابحث عن عامل...",
-  "Rechercher par désignation ou numéro de série...": "ابحث باسم الأداة أو الرقم التسلسلي...",
-  "Rechercher dans les outils en circulation...": "ابحث في الأدوات خارج المخزن...",
-  "Rechercher dans le journal...": "ابحث في السجل...",
-  "Ex : Clé dynamométrique 1/2": "مثال: مفتاح عزم 1/2",
-  "Ex : WR-2024-001": "مثال: WR-2024-001",
-  "Ex : Outillage cellule": "مثال: أدوات الهيكل",
-  "Rechercher dans l'inventaire...": "ابحث في المخزون...",
-  "Nom complet de l'agent": "الاسم الكامل للعامل",
-  "EMP-001": "EMP-001",
-  "Ex : Mécanicien cellule": "مثال: ميكانيكي هيكل",
-  "Rechercher un agent...": "ابحث عن عامل..."
+const EN_MAP = {
+  "Magasin d'Outillage": "Tool Store", "Atelier de Maintenance Aéronautique Militaire": "Military Aircraft Maintenance Workshop",
+  "ARMÉE DE L'AIR ET DE L'ESPACE": "AIR AND SPACE FORCE", "⚙️ Paramètres": "⚙️ Settings",
+  "📤 Sortie d'Outil": "📤 Tool Checkout", "📋 Journal": "📋 Log", "🔩 Inventaire": "🔩 Inventory", "👷 Personnel": "👷 Staff",
+  "📤 Enregistrement de Sortie d'Outillage": "📤 Tool Checkout Registration", "Technicien / Mécanicien": "Technician / Mechanic",
+  "Rechercher et ajouter un outil": "Search and add a tool", "Outils sélectionnés pour la sortie": "Selected tools for checkout",
+  "📤 Confirmer la Sortie": "📤 Confirm Checkout", "📥 Retour d'Outillage — Outils en Circulation": "📥 Tool Return — Tools in Use",
+  "Agent": "Worker", "Désignation": "Tool", "N° Série": "Serial No.", "Date de Sortie": "Checkout Date", "Action": "Action",
+  "📋 Journal Complet des Mouvements": "📋 Complete Movement Log", "📄 Télécharger tout le journal en PDF": "📄 Download complete log as PDF",
+  "Sortie le": "Checked out", "Retour le": "Returned", "État": "Status", "Modification": "Edit",
+  "➕ Ajouter un Outil à l'Inventaire": "➕ Add Tool to Inventory", "N° de Série": "Serial No.", "Catégorie": "Category", "➕ Ajouter": "➕ Add",
+  "🔩 Inventaire des Outils": "🔩 Tool Inventory", "➕ Ajouter un Agent au Registre": "➕ Add Worker", "Nom et Prénom": "Full name",
+  "Matricule (optionnel)": "Employee ID (optional)", "Spécialité / Section": "Specialty / Section", "👷 Personnel Habilité": "👷 Authorized Staff",
+  "Nom": "Name", "Matricule": "Employee ID", "Spécialité": "Specialty", "Outils en Main": "Tools Held",
+  "Confirmation": "Confirmation", "Annuler": "Cancel", "Supprimer": "Delete", "Total Outillage": "Total Tools", "En Stock": "In Stock",
+  "En Circulation": "In Use", "Personnel Habilité": "Authorized Staff", "Aucun outil en circulation actuellement": "No tools currently in use",
+  "Aucun mouvement enregistré": "No movement recorded", "Inventaire vide": "Inventory empty", "Aucun agent enregistré": "No workers registered",
+  "Retour": "Return", "Retirer": "Remove", "Non retourné": "Not returned", "Marquer retour": "Mark returned", "Annuler retour": "Cancel return",
+  "Langue de l'application": "Application language", "Couleurs de l'interface": "Interface colors", "Modification du journal": "Log editing",
+  "Activer les boutons de modification dans le journal": "Enable edit buttons in the log", "Permet de marquer un retour, annuler un retour ou supprimer une ligne du journal.": "Allows marking a return, cancelling a return, or deleting a log line.",
+  "Conservation des registres": "Record keeping", "Tous les mouvements sont conservés dans le téléphone. Le PDF exporte désormais tout le journal, pas seulement le jour actuel.": "All movements are kept on the phone. PDF export now includes the full log, not only today.",
+  "PDF du journal complet téléchargé": "Complete log PDF downloaded", "Fonction PDF non disponible dans cette version APK": "PDF feature is not available in this APK version"
 };
 
-function normalizeText(s) {
-  return (s || '').replace(/\s+/g, ' ').trim();
-}
+const PLACEHOLDERS = {
+  ar: {
+    "Rechercher un agent...": "ابحث عن عامل...", "Rechercher par désignation ou numéro de série...": "ابحث باسم الأداة أو الرقم التسلسلي...",
+    "Rechercher dans les outils en circulation...": "ابحث في الأدوات خارج المخزن...", "Rechercher dans le journal...": "ابحث في السجل...",
+    "Ex : Clé dynamométrique 1/2": "مثال: مفتاح عزم 1/2", "Ex : WR-2024-001": "مثال: WR-2024-001", "Ex : Outillage cellule": "مثال: أدوات الهيكل",
+    "Rechercher dans l'inventaire...": "ابحث في المخزون...", "Nom complet de l'agent": "الاسم الكامل للعامل", "Ex : Mécanicien cellule": "مثال: ميكانيكي هيكل"
+  },
+  en: {
+    "Rechercher un agent...": "Search worker...", "Rechercher par désignation ou numéro de série...": "Search by tool name or serial number...",
+    "Rechercher dans les outils en circulation...": "Search tools in use...", "Rechercher dans le journal...": "Search log...",
+    "Ex : Clé dynamométrique 1/2": "Ex: Torque wrench 1/2", "Ex : WR-2024-001": "Ex: WR-2024-001", "Ex : Outillage cellule": "Ex: Airframe tools",
+    "Rechercher dans l'inventaire...": "Search inventory...", "Nom complet de l'agent": "Worker full name", "Ex : Mécanicien cellule": "Ex: Airframe mechanic"
+  }
+};
 
-function translateString(s) {
-  if (currentLang !== 'ar') return s;
+function normalizeText(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+function mapText(s) {
   const clean = normalizeText(s);
-  return AR_MAP[clean] || s;
+  if (currentLang === 'ar') return AR_MAP[clean] || s;
+  if (currentLang === 'en') return EN_MAP[clean] || s;
+  return s;
 }
+
+function openSettings(){ document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('settingsDrawer').classList.add('open'); }
+function closeSettings(){ document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('settingsDrawer').classList.remove('open'); }
+function setLanguage(lang){ currentLang = lang; localStorage.setItem('aero_lang', currentLang); applyLanguage(); renderAll(); }
+function setEditLogMode(v){ editLogMode = !!v; localStorage.setItem('aero_edit_log', editLogMode ? '1' : '0'); renderLog(); }
+
+const THEMES = {
+  blue:   { sky:'#0a7abf', dark:'#065a8c', deep:'#043d61', bg:'#06304d', card:'#07405f', lite:'#0d5a82', accent:'#4db8ff', accent2:'#00d4ff' },
+  dark:   { sky:'#1c2533', dark:'#111827', deep:'#0b111c', bg:'#050914', card:'#101827', lite:'#1f2a3a', accent:'#9fb5cc', accent2:'#d8e6f3' },
+  green:  { sky:'#2f6f4e', dark:'#1f5138', deep:'#163a2a', bg:'#0c241a', card:'#123521', lite:'#1d4d33', accent:'#65d889', accent2:'#9fffb9' },
+  silver: { sky:'#8aaabb', dark:'#657f91', deep:'#3d5363', bg:'#263945', card:'#334957', lite:'#4b6475', accent:'#dce9f4', accent2:'#ffffff' }
+};
+function setTheme(name){ currentTheme = name; localStorage.setItem('aero_theme', name); applyTheme(); }
+function applyTheme(){ const t = THEMES[currentTheme] || THEMES.blue; const r=document.documentElement.style; r.setProperty('--sky',t.sky); r.setProperty('--sky-dark',t.dark); r.setProperty('--sky-deep',t.deep); r.setProperty('--sky-bg',t.bg); r.setProperty('--sky-card',t.card); r.setProperty('--sky-lite',t.lite); r.setProperty('--accent',t.accent); r.setProperty('--accent2',t.accent2); }
 
 function applyLanguage() {
   const isAr = currentLang === 'ar';
-  document.documentElement.lang = isAr ? 'ar' : 'fr';
+  document.documentElement.lang = currentLang;
   document.body.classList.toggle('rtl', isAr);
-  document.getElementById('langToggle').textContent = isAr ? 'FR' : 'العربية';
+  document.getElementById('settingsBtn').textContent = isAr ? '⚙️ الإعدادات' : (currentLang === 'en' ? '⚙️ Settings' : '⚙️ Paramètres');
+  document.getElementById('languageSelect').value = currentLang;
+  document.getElementById('themeSelect').value = currentTheme;
+  document.getElementById('editLogToggle').checked = editLogMode;
 
-  document.querySelectorAll('h1, h2, span, label, button, th, td, div.card-title, div.stat-label, div.modal-title, p, .empty').forEach(el => {
+  document.querySelectorAll('[data-i18n-key], h1, h2, span, label, button, th, td, div.card-title, div.stat-label, div.modal-title, p, .empty').forEach(el => {
     if (el.children.length === 0) {
       if (!el.dataset.frText) el.dataset.frText = el.textContent;
-      el.textContent = isAr ? (AR_MAP[normalizeText(el.dataset.frText)] || el.dataset.frText) : el.dataset.frText;
+      el.textContent = mapText(el.dataset.frText);
     }
   });
 
   document.querySelectorAll('input').forEach(el => {
     if (!el.dataset.frPlaceholder) el.dataset.frPlaceholder = el.placeholder || '';
-    el.placeholder = isAr ? (AR_PLACEHOLDERS[el.dataset.frPlaceholder] || el.dataset.frPlaceholder) : el.dataset.frPlaceholder;
+    const ph = PLACEHOLDERS[currentLang] || {};
+    el.placeholder = ph[el.dataset.frPlaceholder] || el.dataset.frPlaceholder;
   });
 
   const ticker = document.querySelector('.classified-bar span');
   if (ticker) {
     if (!ticker.dataset.frText) ticker.dataset.frText = ticker.textContent;
-    ticker.textContent = isAr
+    ticker.textContent = currentLang === 'ar'
       ? "✦ قاعدة جوية — ورشة الصيانة — قسم الأدوات ✦   الاستعمال مخصص فقط للعمال المصرح لهم ✦   يمنع إخراج أي أداة دون تسجيل ✦   فحص الأدوات إجباري قبل وبعد الاستعمال ✦   السلامة الجوية — لا مجال للتهاون ✦"
-      : ticker.dataset.frText;
+      : currentLang === 'en'
+        ? "✦ AIR BASE — MAINTENANCE WORKSHOP — TOOL SECTION ✦ AUTHORIZED PERSONNEL ONLY ✦ UNREGISTERED TOOL CHECKOUT IS FORBIDDEN ✦ TOOL INSPECTION REQUIRED BEFORE AND AFTER USE ✦ AVIATION SAFETY — ZERO TOLERANCE ✦"
+        : ticker.dataset.frText;
   }
 }
 
-function toggleLanguage() {
-  currentLang = currentLang === 'fr' ? 'ar' : 'fr';
-  localStorage.setItem('aero_lang', currentLang);
-  renderAll();
-}
-
+function toggleLanguage() { setLanguage(currentLang === 'fr' ? 'ar' : 'fr'); }
+applyTheme();
 // ========== DATA ==========
 let data = {
   workers: [
@@ -943,7 +1009,7 @@ function renderLog() {
   const q = (document.getElementById('logSearch')?.value||'').toLowerCase();
   const logs = [...data.loans].reverse().filter(l => !q||l.workerName.toLowerCase().includes(q)||l.toolName.toLowerCase().includes(q)||l.toolSerial.toLowerCase().includes(q));
   const body = document.getElementById('logBody');
-  if (!logs.length) { body.innerHTML=`<tr><td colspan="6" class="empty"><span class="icon">📋</span>Aucun mouvement enregistré</td></tr>`; return; }
+  if (!logs.length) { body.innerHTML=`<tr><td colspan="7" class="empty"><span class="icon">📋</span>Aucun mouvement enregistré</td></tr>`; return; }
   body.innerHTML = logs.map(l => `
     <tr class="${l.returnTime?'':'log-out'}">
       <td><strong>${l.workerName}</strong></td>
@@ -952,8 +1018,38 @@ function renderLog() {
       <td style="font-size:11px;color:var(--silver-dim);">${fmtDate(l.checkoutTime)}</td>
       <td style="font-size:11px;color:var(--silver-dim);">${fmtDate(l.returnTime)}</td>
       <td>${l.returnTime?'<span class="badge in dot">En Stock</span>':'<span class="badge out dot">Sorti</span>'}</td>
+      <td>${editLogMode ? `<div class="log-actions">${l.returnTime ? `<button class="btn btn-ghost btn-sm" onclick="cancelReturn('${l.id}')">Annuler retour</button>` : `<button class="btn btn-green btn-sm" onclick="forceReturn('${l.id}')">Marquer retour</button>`}<button class="btn btn-danger btn-sm" onclick="deleteLogEntry('${l.id}')">Supprimer</button></div>` : '—'}</td>
     </tr>
   `).join('');
+}
+
+
+function forceReturn(loanId) {
+  const loan = data.loans.find(l => l.id === loanId);
+  if (!loan) return;
+  loan.returnTime = nowISO();
+  const t = data.tools.find(x => x.id === loan.toolId);
+  if (t) t.status = 'in';
+  save(); toast('Retour enregistré ✅'); renderAll();
+}
+function cancelReturn(loanId) {
+  const loan = data.loans.find(l => l.id === loanId);
+  if (!loan) return;
+  loan.returnTime = null;
+  const t = data.tools.find(x => x.id === loan.toolId);
+  if (t) t.status = 'out';
+  save(); toast('Retour annulé'); renderAll();
+}
+function deleteLogEntry(loanId) {
+  openModal('Suppression Journal', 'Confirmer la suppression de cette ligne du journal ?', () => {
+    const loan = data.loans.find(l => l.id === loanId);
+    if (loan && !loan.returnTime) {
+      const t = data.tools.find(x => x.id === loan.toolId);
+      if (t) t.status = 'in';
+    }
+    data.loans = data.loans.filter(l => l.id !== loanId);
+    save(); toast('Ligne du journal supprimée'); renderAll();
+  });
 }
 
 // ========== TOOLS TABLE ==========
@@ -1047,23 +1143,19 @@ function renderStats() {
 
 
 function exportDailyPdf() {
-  const today = new Date().toDateString();
-
-  const dailyLogs = data.loans.filter(l => {
-    return new Date(l.checkoutTime).toDateString() === today;
-  }).map(l => ({
+  const allLogs = [...data.loans].map(l => ({
     workerName: l.workerName,
     toolName: l.toolName,
     toolSerial: l.toolSerial,
     checkoutTime: fmtDate(l.checkoutTime),
-    returnTime: l.returnTime ? fmtDate(l.returnTime) : "Non retourné"
+    returnTime: l.returnTime ? fmtDate(l.returnTime) : mapText("Non retourné")
   }));
 
   if (typeof AndroidPDF !== "undefined" && AndroidPDF.saveDailyPdf) {
-    AndroidPDF.saveDailyPdf(JSON.stringify(dailyLogs));
-    toast("PDF du journal quotidien téléchargé");
+    AndroidPDF.saveDailyPdf(JSON.stringify(allLogs));
+    toast(mapText("PDF du journal complet téléchargé"));
   } else {
-    toast("Fonction PDF non disponible dans cette version APK", "error");
+    toast(mapText("Fonction PDF non disponible dans cette version APK"), "error");
   }
 }
 
