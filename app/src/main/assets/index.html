@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Magasin d'Outillage — Atelier Moteur & cellule</title>
+<title>Magasin D'outillage — Atelier Moteur &amp; cellule</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sky:      #0a7abf;
-    --sky-dark: #065a8c;
-    --sky-deep: #043d61;
-    --sky-bg:   #06304d;
-    --sky-card: #07405f;
-    --sky-lite: #0d5a82;
-    --silver:   #c8d8e8;
-    --silver-dim:#8aaabb;
-    --black:    #c8d8e8;
-    --accent:   #4db8ff;
-    --accent2:  #00d4ff;
-    --green:    #00e599;
-    --red:      #ff4d6d;
-    --border:   #1a5a7a;
-    --radius:   10px;
-    --shadow:   0 4px 28px rgba(0,0,0,0.5);
+    --sky:      #3f88ad;
+    --sky-dark: #2f6f91;
+    --sky-deep: #254f68;
+    --sky-bg:   #d7e8f0;
+    --sky-card: #f4f8fb;
+    --sky-lite: #e6f1f6;
+    --silver:   #263845;
+    --silver-dim:#607683;
+    --black:    #1f2e38;
+    --accent:   #4a9fc7;
+    --accent2:  #3f88ad;
+    --green:    #2e9f78;
+    --red:      #c45b68;
+    --border:   #b7cdd8;
+    --radius:   16px;
+    --shadow:   0 4px 14px rgba(30,60,80,0.18);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,13 +41,13 @@
 
   /* ===== HEADER ===== */
   header {
-    background: linear-gradient(135deg, var(--sky-deep) 0%, var(--sky-dark) 100%);
-    border-bottom: 2px solid var(--accent);
+    background: linear-gradient(135deg, #edf7fb 0%, #cfe5ef 100%);
+    border-bottom: 1px solid var(--border);
     padding: 10px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: var(--shadow), 0 0 40px rgba(77,184,255,0.1);
+    box-shadow: var(--shadow);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -64,11 +64,11 @@
 
   .logo-icon {
     width: 42px; height: 42px;
-    background: linear-gradient(135deg, var(--sky) 0%, var(--accent) 100%);
+    background: linear-gradient(135deg, #d8e9f1 0%, #bcd7e4 100%);
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 20px;
-    box-shadow: 0 0 18px rgba(77,184,255,0.4);
+    box-shadow: 0 3px 10px rgba(60,100,120,0.18);
     flex-shrink: 0;
   }
 
@@ -76,7 +76,7 @@
     font-family: 'Rajdhani', sans-serif;
     font-size: 17px;
     font-weight: 700;
-    color: #fff;
+    color: var(--black);
     letter-spacing: 1.5px;
     text-transform: uppercase;
     line-height: 1.1;
@@ -92,7 +92,7 @@
   .mil-badge {
     display: flex; align-items: center; gap: 8px;
     padding: 5px 12px;
-    background: rgba(77,184,255,0.08);
+    background: rgba(74,159,199,0.08);
     border: 1px solid rgba(77,184,255,0.2);
     border-radius: 6px;
   }
@@ -117,7 +117,7 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9px;
     color: var(--accent2);
-    background: rgba(0,212,255,0.08);
+    background: rgba(74,159,199,0.08);
     padding: 4px 10px;
     border-radius: 6px;
     border: 1px solid rgba(0,212,255,0.2);
@@ -133,14 +133,14 @@
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 24px;
-    box-shadow: 0 0 18px rgba(77,184,255,0.4);
+    box-shadow: 0 3px 10px rgba(60,100,120,0.18);
     flex-shrink: 0;
     transform: scaleX(-1);
   }
 
   /* ===== TICKER ===== */
   .classified-bar {
-    background: repeating-linear-gradient(45deg, #061824, #061824 10px, #081f30 10px, #081f30 20px);
+    background: repeating-linear-gradient(45deg, #d9eaf2, #d9eaf2 10px, #e8f3f8 10px, #e8f3f8 20px);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     padding: 5px 0;
@@ -160,7 +160,7 @@
 
   /* ===== NAV ===== */
   nav {
-    background: var(--sky-deep);
+    background: #e9f3f8;
     border-bottom: 1px solid var(--border);
     display: flex; gap: 2px;
     padding: 7px 28px;
@@ -178,8 +178,8 @@
     display: flex; align-items: center; gap: 6px;
     text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .nav-btn:hover { background: rgba(77,184,255,0.1); color: #fff; border-color: var(--border); }
-  .nav-btn.active { background: var(--sky); color: #fff; border-color: var(--accent); box-shadow: 0 0 14px rgba(77,184,255,0.3); }
+  .nav-btn:hover { background: rgba(77,184,255,0.1); color: var(--black); border-color: var(--border); }
+  .nav-btn.active { background: var(--sky); color: var(--black); border-color: var(--accent); box-shadow: 0 0 14px rgba(77,184,255,0.3); }
 
   /* ===== MAIN ===== */
   main { max-width: 1300px; margin: 0 auto; padding: 22px 18px; }
@@ -257,7 +257,7 @@
     width: 100%;
     padding: 9px 14px 9px 40px;
     background: var(--sky-lite); border: 1px solid var(--border);
-    border-radius: 7px; color: #fff;
+    border-radius: 7px; color: var(--black);
     font-family: 'Exo 2', sans-serif; font-size: 13px;
     transition: border 0.2s;
   }
@@ -269,16 +269,16 @@
   .tbl-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th {
-    background: var(--sky-deep); padding: 10px 13px;
+    background: #e9f3f8; padding: 10px 13px;
     text-align: left; font-weight: 700; color: var(--accent);
     white-space: nowrap; border-bottom: 2px solid var(--border);
     text-transform: uppercase; letter-spacing: 0.7px; font-size: 10px;
     font-family: 'Rajdhani', sans-serif;
   }
   tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
-  tbody tr:hover { background: rgba(77,184,255,0.06); }
+  tbody tr:hover { background: rgba(74,159,199,0.10); }
   tbody td { padding: 10px 13px; vertical-align: middle; color: var(--silver); }
-  tbody td strong { color: #fff; }
+  tbody td strong { color: var(--black); }
 
   /* ===== BADGE ===== */
   .badge {
@@ -297,7 +297,7 @@
   .field input, .field select {
     width: 100%; padding: 8px 11px;
     background: var(--sky-lite); border: 1px solid var(--border);
-    border-radius: 7px; color: #fff;
+    border-radius: 7px; color: var(--black);
     font-family: 'Exo 2', sans-serif; font-size: 13px;
     transition: border 0.2s;
   }
@@ -314,7 +314,7 @@
     z-index: 200; box-shadow: var(--shadow); display: none;
   }
   .dropdown-list.open { display: block; }
-  .dropdown-item { padding: 8px 13px; cursor: pointer; font-size: 13px; color: #fff; transition: background 0.15s; }
+  .dropdown-item { padding: 8px 13px; cursor: pointer; font-size: 13px; color: var(--black); transition: background 0.15s; }
   .dropdown-item:hover { background: rgba(77,184,255,0.2); color: var(--accent2); }
   .dropdown-item .sub { font-size: 11px; color: var(--silver-dim); display: block; margin-top: 1px; }
 
@@ -326,12 +326,12 @@
     display: inline-flex; align-items: center; gap: 6px;
     text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .btn-primary { background: linear-gradient(135deg, var(--sky) 0%, var(--accent) 100%); color: #000; box-shadow: 0 0 14px rgba(77,184,255,0.22); }
+  .btn-primary { background: linear-gradient(135deg, #d8e9f1 0%, #bcd7e4 100%); color: #000; box-shadow: 0 0 14px rgba(77,184,255,0.22); }
   .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-  .btn-danger  { background: var(--red); color: #fff; }
+  .btn-danger  { background: var(--red); color: var(--black); }
   .btn-danger:hover  { filter: brightness(1.1); }
   .btn-ghost { background: transparent; color: var(--silver-dim); border: 1px solid var(--border); }
-  .btn-ghost:hover { background: var(--sky-lite); color: #fff; }
+  .btn-ghost:hover { background: var(--sky-lite); color: var(--black); }
   .btn-green { background: var(--green); color: #000; }
   .btn-green:hover { filter: brightness(1.1); }
   .btn-sm { padding: 4px 11px; font-size: 10px; }
@@ -343,7 +343,7 @@
     padding: 8px 13px; border-bottom: 1px solid var(--border); font-size: 13px;
   }
   .checkout-item:last-child { border-bottom: none; }
-  .checkout-item .tool-name { font-weight: 700; color: #fff; }
+  .checkout-item .tool-name { font-weight: 700; color: var(--black); }
   .checkout-item .tool-serial { font-size: 11px; color: var(--silver-dim); font-family: 'IBM Plex Mono', monospace; }
 
   .log-out td { background: rgba(255,77,109,0.04); }
@@ -361,7 +361,7 @@
   #toast {
     position: fixed; bottom: 22px; left: 50%;
     transform: translateX(-50%) translateY(68px);
-    background: var(--sky-card); color: #fff;
+    background: var(--sky-card); color: var(--black);
     border: 1px solid var(--border); border-radius: 8px;
     padding: 10px 20px; font-size: 12px; font-weight: 700;
     z-index: 999; box-shadow: var(--shadow); transition: transform 0.3s;
@@ -386,7 +386,7 @@
     border-radius: 7px;
     border: 1px solid var(--accent);
     background: rgba(77,184,255,0.12);
-    color: #fff;
+    color: var(--black);
     font-family: 'Exo 2', sans-serif;
     font-size: 11px;
     font-weight: 800;
@@ -447,6 +447,28 @@
   .close-drawer { background: transparent; border:1px solid var(--border); color:#fff; border-radius:8px; padding:7px 10px; cursor:pointer; }
   .log-actions { display:flex; gap:6px; flex-wrap:wrap; }
 
+
+
+  /* ===== SOFT UI ADJUSTMENTS ===== */
+  header, .card, .stat-box, .settings-drawer, .modal, .logo-icon, .jet-icon, .mil-badge, .header-time {
+    border-radius: 16px;
+  }
+  header {
+    margin: 10px;
+  }
+  .card, .stat-box, .settings-section {
+    border-color: rgba(120,150,165,0.45);
+  }
+  .card::before, .card::after {
+    opacity: .45;
+  }
+  .classified-bar {
+    opacity: .82;
+  }
+  input, select, button, .nav-btn {
+    border-radius: 12px !important;
+  }
+
   @media (max-width: 640px) {
     header { padding: 8px 12px; }
     nav { padding: 6px 8px; overflow-x: auto; }
@@ -463,8 +485,8 @@
   <div class="header-left">
     <div class="logo-icon">🔧</div>
     <div class="logo-text">
-      <h1>Magasin d'Outillage</h1>
-      <span class="sub">Atelier de Maintenance Aéronautique Militaire</span>
+      <h1>Magasin D'outillage</h1>
+      <span class="sub">Atelier Moteur &amp; cellule</span>
     </div>
     <div class="mil-badge">
       <div class="roundel"></div>
@@ -696,7 +718,7 @@ let editLogMode = localStorage.getItem('aero_edit_log') === '1';
 let currentTheme = localStorage.getItem('aero_theme') || 'blue';
 
 const AR_MAP = {
-  "Magasin d'Outillage": "مخزن الأدوات", "Atelier de Maintenance Aéronautique Militaire": "ورشة صيانة الطائرات العسكرية",
+  "Magasin D'outillage": "مخزن الأدوات", "Atelier Moteur & cellule": "ورشة المحرك والهيكل",
   "ARMÉE DE L'AIR ET DE L'ESPACE": "القوات الجوية والفضاء", "⚙️ Paramètres": "⚙️ الإعدادات",
   "📤 Sortie d'Outil": "📤 إخراج أداة", "📋 Journal": "📋 السجل", "🔩 Inventaire": "🔩 المخزون", "👷 Personnel": "👷 العمال",
   "📤 Enregistrement de Sortie d'Outillage": "📤 تسجيل إخراج الأدوات", "Technicien / Mécanicien": "الفني / الميكانيكي",
@@ -720,7 +742,7 @@ const AR_MAP = {
 };
 
 const EN_MAP = {
-  "Magasin d'Outillage": "Tool Store", "Atelier de Maintenance Aéronautique Militaire": "Military Aircraft Maintenance Workshop",
+  "Magasin D'outillage": "Tool Store", "Atelier Moteur & cellule": "Engine & Airframe Workshop",
   "ARMÉE DE L'AIR ET DE L'ESPACE": "AIR AND SPACE FORCE", "⚙️ Paramètres": "⚙️ Settings",
   "📤 Sortie d'Outil": "📤 Tool Checkout", "📋 Journal": "📋 Log", "🔩 Inventaire": "🔩 Inventory", "👷 Personnel": "👷 Staff",
   "📤 Enregistrement de Sortie d'Outillage": "📤 Tool Checkout Registration", "Technicien / Mécanicien": "Technician / Mechanic",
